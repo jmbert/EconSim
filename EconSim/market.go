@@ -109,11 +109,6 @@ func MarketTick() {
 			pop.fulfilledNeeds = false
 		}
 	}
-	if p.fulfilledNeeds {
-		pop.size += pop.size / 100
-	} else if pop.size > 0 {
-		pop.size -= pop.size / 100
-	}
 
 	for i := range goods {
 		if producedGoods[i] > market.demand[i] {

@@ -1,6 +1,9 @@
 package sim
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 // PopType
 type PopType struct {
@@ -25,6 +28,11 @@ func NewPop(Type int) {
 	p.fulfilledNeeds = true
 	p.size = 1000
 	pop = p
+}
+
+func (p *Pop) PopTick() {
+	var delta = rand.Intn(20) - 5
+	pop.size += delta
 }
 
 func (p Pop) String() string {

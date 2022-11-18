@@ -1,26 +1,11 @@
 package sim
 
-var ironPrice []float64
-var coalPrice []float64
-var steelPrice []float64
-
-var ironSupply []float64
-var coalSupply []float64
-var steelSupply []float64
-
-var ironDemand []float64
-var coalDemand []float64
-var steelDemand []float64
-
-var producedGoods []float64
-
-var populationSize []float64
-var populationFunds []float64
-
 var numEmployable int
 
 func Tick() {
 	numEmployable = pop.size
+
+	pop.PopTick()
 
 	for _, f := range factories {
 		f.FactoryTick()
@@ -56,7 +41,7 @@ func Tick() {
 
 func Run() {
 	Setup()
-	for i := 0; i < 2000; i++ {
+	for i := 0; i < 1000; i++ {
 		Tick()
 		//fmt.Printf("\n---------------------------------------------------------\n")
 	}

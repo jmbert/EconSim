@@ -60,7 +60,7 @@ func (f *Factory) FactoryTick() {
 			break
 		}
 	}
-	f.producedGood = 5 * float64(f.employees) / float64(f.maxEmployees)
+	f.producedGood = 5 * float64(f.employees) / 100
 	market.availableGoods[idx] += f.producedGood
 	producedGoods[idx] += f.producedGood
 	f.funds += market.goodPrices[idx]

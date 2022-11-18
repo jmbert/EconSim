@@ -9,6 +9,19 @@ import (
 	"github.com/go-echarts/go-echarts/v2/types"
 )
 
+var ironPrice []float64
+var coalPrice []float64
+var steelPrice []float64
+var ironSupply []float64
+var coalSupply []float64
+var steelSupply []float64
+var ironDemand []float64
+var coalDemand []float64
+var steelDemand []float64
+var producedGoods []float64
+var populationSize []float64
+var populationFunds []float64
+
 func xLabel(len int) []string {
 	var s []string
 	for i := 0; i < len; i++ {
