@@ -65,10 +65,11 @@ func MarketTick() {
 			}
 		}
 		for _, d := range didx {
-			market.demand[d] += f.Type.amount[d]
+			var demands = f.Type.amount[d] * float64(f.employees) / 100
+			market.demand[d] += demands
 			if market.availableGoods[d] > 0 {
-				if f.funds >= f.Type.amount[d]*market.goodPrices[d] {
-					market.availableGoods[d] -= f.Type.amount[d]
+				if f.funds >= demands*market.goodPrices[d] {
+					market.availableGoods[d] -= demands
 					if market.goodPrices[d] < 0.1 {
 						f.funds -= 0.1
 					} else {
