@@ -47,12 +47,12 @@ type Factory struct {
 	maxEmployees   int
 }
 
-func (f *Factory) FactoryTick() {
+func (f *Factory) FactoryTick(province *Province) {
 	var employed = int(math.Min(math.Min(f.funds, float64(f.maxEmployees)), float64(numEmployable)))
 	numEmployable -= employed
 	f.employees = employed
 	f.funds -= float64(f.employees) * 0.01
-	pop.funds += float64(f.employees) * 0.01
+	province.pop.funds += float64(f.employees) * 0.01
 	var idx int
 	for i, v := range goods {
 		if v == f.Type.outputGood {
@@ -60,10 +60,10 @@ func (f *Factory) FactoryTick() {
 			break
 		}
 	}
-	f.producedGood = 5 * float64(f.employees) / 100
-	market.availableGoods[idx] += f.producedGood
+	f.producedGood = float64(f.employees) / 100
+	nation.market.availableGoods[idx] += f.producedGood
 	producedGoods[idx] += f.producedGood
-	f.funds += market.goodPrices[idx]
+	f.funds += nation.market.goodPrices[idx]
 
 	if f.funds > 10 && f.employees == f.maxEmployees {
 		f.maxEmployees += 100
@@ -74,7 +74,7 @@ func (f Factory) String() string {
 	return fmt.Sprintf("Input/Output:%v\nProduced:%v\nFunds:%f\nFulfilled Needs:%v\nEmployed:%d", f.Type, f.producedGood, f.funds, f.fulfilledNeeds, f.employees)
 }
 
-func NewFactory(Type int) {
+func NewFactory(Type int) *Factory {
 	var f Factory
 	f.Type = factoryTypes[Type]
 	f.producedGood = 0
@@ -82,7 +82,5 @@ func NewFactory(Type int) {
 	f.fulfilledNeeds = true
 	f.employees = 0
 	f.maxEmployees = 50
-	factories = append(factories, &f)
+	return &f
 }
-
-var factories []*Factory

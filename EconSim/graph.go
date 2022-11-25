@@ -38,14 +38,14 @@ func generateItems(list []float64) []opts.LineData {
 	return items
 }
 
-func all(w http.ResponseWriter, _ *http.Request) {
+func marketGraph(w http.ResponseWriter, _ *http.Request) {
 	// create a new line instance
 	line := charts.NewLine()
 	// set some global options like Title/Legend/ToolTip or anything else
 	line.SetGlobalOptions(
 		charts.WithInitializationOpts(opts.Initialization{Theme: types.ThemeInfographic}),
 		charts.WithTitleOpts(opts.Title{
-			Title: "All",
+			Title: "Market",
 		}),
 		charts.WithLegendOpts(opts.Legend{Show: true}),
 	)
@@ -60,13 +60,31 @@ func all(w http.ResponseWriter, _ *http.Request) {
 		AddSeries("Steel Supply", generateItems(steelSupply)).
 		AddSeries("Iron Demand", generateItems(ironDemand)).
 		AddSeries("Coal Demand", generateItems(coalDemand)).
-		AddSeries("Steel Demand", generateItems(steelDemand)).
+		AddSeries("Steel Demand", generateItems(steelDemand))
+	line.Render(w)
+}
+
+func pops(w http.ResponseWriter, _ *http.Request) {
+	// create a new line instance
+	line := charts.NewLine()
+	// set some global options like Title/Legend/ToolTip or anything else
+	line.SetGlobalOptions(
+		charts.WithInitializationOpts(opts.Initialization{Theme: types.ThemeInfographic}),
+		charts.WithTitleOpts(opts.Title{
+			Title: "Pops",
+		}),
+		charts.WithLegendOpts(opts.Legend{Show: true}),
+	)
+
+	// Put data into instance
+	line.SetXAxis(xLabel(len(ironPrice))).
 		AddSeries("Population Size", generateItems(populationSize)).
 		AddSeries("Population Funds", generateItems(populationFunds))
 	line.Render(w)
 }
 
 func Graph() {
-	http.HandleFunc("/", all)
+	http.HandleFunc("/market", marketGraph)
+	http.HandleFunc("/pops", pops)
 	http.ListenAndServe(":8080", nil)
 }

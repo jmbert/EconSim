@@ -5,8 +5,6 @@ import (
 	"math"
 )
 
-var market Market
-
 // Market
 type Market struct {
 	availableGoods []float64
@@ -45,69 +43,71 @@ func (m Market) String() string {
 	return fmt.Sprintf("Available Goods: %v \nGood Prices: %v\nDemand: %v", availableGoodsNames, goodPricesNames, demandNames)
 }
 
-func MarketTick() {
-	for _, f := range factories {
-		var idx int
-		for i, v := range goods {
-			if v == f.Type.outputGood {
-				idx = i
-				break
-			}
-		}
-		market.availableGoods[idx] += f.producedGood
-		f.fulfilledNeeds = true
-		var didx []int
-		for i, v := range goods {
-			for _, I := range f.Type.inputGoods {
-				if v == I {
-					didx = append(didx, i)
+func (market *Market) MarketTick(n *Nation) {
+	for _, province := range n.provinces {
+		for _, f := range province.factories {
+			var idx int
+			for i, v := range goods {
+				if v == f.Type.outputGood {
+					idx = i
+					break
 				}
 			}
-		}
-		for _, d := range didx {
-			var demands = f.Type.amount[d] * float64(f.employees) / 100
-			market.demand[d] += demands
-			if market.availableGoods[d] > 0 {
-				if f.funds >= demands*market.goodPrices[d] {
-					market.availableGoods[d] -= demands
-					if market.goodPrices[d] < 0.1 {
-						f.funds -= 0.1
+			market.availableGoods[idx] += f.producedGood
+			f.fulfilledNeeds = true
+			var didx []int
+			for i, v := range goods {
+				for _, I := range f.Type.inputGoods {
+					if v == I {
+						didx = append(didx, i)
+					}
+				}
+			}
+			for _, d := range didx {
+				var demands = f.Type.amount[d] * float64(f.employees) / 100
+				market.demand[d] += demands
+				if market.availableGoods[d] > 0 {
+					if f.funds >= demands*market.goodPrices[d] {
+						market.availableGoods[d] -= demands
+						if market.goodPrices[d] < 0.1 {
+							f.funds -= 0.1
+						} else {
+							f.funds -= market.goodPrices[d]
+						}
 					} else {
-						f.funds -= market.goodPrices[d]
+						f.fulfilledNeeds = false
 					}
 				} else {
 					f.fulfilledNeeds = false
 				}
-			} else {
-				f.fulfilledNeeds = false
 			}
+
 		}
 
-	}
-
-	p := pop
-	t := pop.Type
-	for i, n := range t.needs {
-		var idx int
-		for i, v := range goods {
-			if v == n {
-				idx = i
-				break
+		p := province.pop
+		t := province.pop.Type
+		for i, n := range t.needs {
+			var idx int
+			for i, v := range goods {
+				if v == n {
+					idx = i
+					break
+				}
 			}
-		}
-		var demand = t.amount[i] * float64(pop.size) / 1000
+			var demand = t.amount[i] * float64(province.pop.size) / 1000
 
-		market.demand[idx] += math.Max(demand, 0)
+			market.demand[idx] += math.Max(demand, 0)
 
-		if market.availableGoods[idx] >= t.amount[i] {
-			if pop.funds >= float64(demand*market.goodPrices[idx]) {
-				pop.funds -= demand * market.goodPrices[idx]
-				market.availableGoods[idx] -= demand
+			if market.availableGoods[idx] >= t.amount[i] {
+				if province.pop.funds >= float64(demand*market.goodPrices[idx]) {
+					province.pop.funds -= demand * market.goodPrices[idx]
+					market.availableGoods[idx] -= demand
+				} else {
+					p.fulfilledNeeds = false
+				}
 			} else {
-				p.fulfilledNeeds = false
+				province.pop.fulfilledNeeds = false
 			}
-		} else {
-			pop.fulfilledNeeds = false
 		}
 	}
 

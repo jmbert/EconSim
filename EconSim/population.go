@@ -21,22 +21,20 @@ type Pop struct {
 	fulfilledNeeds bool
 }
 
-func NewPop(Type int) {
+func NewPop(Type int) Pop {
 	var p Pop
 	p.Type = popTypes[0]
 	p.funds = 100
 	p.fulfilledNeeds = true
-	p.size = 1000
-	pop = p
+	p.size = 2000
+	return p
 }
 
-func (p *Pop) PopTick() {
+func (p *Pop) PopTick(province *Province) {
 	var delta = rand.Intn(20) - 5
-	pop.size += delta
+	province.pop.size += delta
 }
 
 func (p Pop) String() string {
 	return fmt.Sprintf("%v\nFunds:%f\nFulfilled Needs:%v\nSize:%d", p.Type, p.funds, p.fulfilledNeeds, p.size)
 }
-
-var pop Pop
